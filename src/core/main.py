@@ -3,7 +3,7 @@ import os
 from mutagen import File
 from mutagen.flac import FLAC
 from models import Track
-from ..services.api_calls import get_lyrics
+from services.api_calls import get_lyrics
 
 music_directory: str = "/home/betten/Music/Fujii Kaze"
 tracks: list[Track] = []
