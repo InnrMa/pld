@@ -1,7 +1,9 @@
 import os
-from mutagen import File
+from mutagen import File, MutagenError
+from result import Ok, Err, Result
+
 from mutagen.flac import FLAC
-from models import Track
+from models.track import Track
 
 music_directory: str = "/home/betten/Music/Fujii Kaze"
 
@@ -16,7 +18,7 @@ def get_audio_duration(file_path: str) -> int:
         return int(audio.info.length)
     raise ValueError("Unsupported or invalid audio file.")
 
-def get_songs_in_directory() -> list[Track]:
+def get_tracklist() -> list[Track]:
     tracks: list[Track] = []
     print(os.getcwd())
     for (root,dirs,files) in os.walk(music_directory):
@@ -27,7 +29,7 @@ def get_songs_in_directory() -> list[Track]:
             if is_flac(root + "/" + file):
                 file_path = root + "/" + file
                 metadata = dict(FLAC(file_path).tags)
-                tracks.append(Track(metadata["album"][0], metadata["title"][0], metadata["artist"][0], root, get_audio_duration(file_path)))
+                tracks.append(Track(metadata["album"][0], metadata["title"][0], metadata["artist"][0], get_audio_duration(file_path)))
 
     return tracks
 
