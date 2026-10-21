@@ -1,5 +1,5 @@
 from mutagen import File, MutagenError
-from result import Ok, Err, Result
+from returns.result import Result, Success, Failure
 
 class AudioFile:
     file_type: str
@@ -17,15 +17,12 @@ class AudioFile:
         try:
             audio = File(self.file_path)
             if audio is None or audio.info is None:
-                return Err(f"'{self.file_path}' is not a valid audio file.")
+                return Failure(f"'{self.file_path}' is not a valid audio file.")
 
-            return Ok(dict(audio))
+            return Success(dict(audio))
 
         except MutagenError as e:
-            return Err(f"Corrupt audio file: {e}")
+            return Failure(f"Corrupt audio file: {e}")
 
         except (FileNotFoundError, PermissionError) as e:
-            return Err(f"OS error: {e}")
-
-
-
+            return Failure(f"OS error: {e}")
