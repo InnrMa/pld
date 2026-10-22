@@ -1,4 +1,4 @@
-from result import is_ok, is_err
+from result import is_ok
 
 from models.audio_file import AudioFile
 

@@ -1,5 +1,4 @@
 import requests
-from requests import Response
 from models.track import Track
 import urllib.parse
 
@@ -7,8 +6,8 @@ HEADERS = {'user-agent': 'pld v0.0.1 (innmax001@gmail.com)'}
 BASE_URL: str = "https://lrclib.net"
 
 def lrc_lib_call(track: Track):
-    r: Response = requests.get(
-        BASE_URL + urllib.parse.urlencode({
+    r = requests.get(
+        BASE_URL + "/api/get?" + urllib.parse.urlencode({
             "artist_name": track.artist_name,
             "track_name": track.track_name,
             "album_name": track.album_name,
