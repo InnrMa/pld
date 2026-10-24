@@ -22,3 +22,6 @@ class AudioFile:
 
         except (FileNotFoundError, PermissionError) as e:
             return Err(f"OS error: {e}")
+
+    def __str__(self) -> str:
+        return f"{self.file_path} - {self.get_metadata_as_dict().is_ok()}"
