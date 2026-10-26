@@ -7,6 +7,24 @@ from services.lyrics_writer import LyricsWriter
 
 MSC_DIR: str = "/home/betten/Music/"
 
+def main():
+    tracklist = get_tracklist()
+
+    for track in tracklist:
+        print(track)
+
+    request = LyricsGetter.get_lyrics(tracklist)
+    if is_ok(request):
+        pairs = request.ok_value
+        for pair in pairs:
+            answer = LyricsWriter.write_to_file(pair)
+            if is_ok(answer):
+                print(answer.ok_value)
+            if is_err(answer):
+                print(answer.err_value)
+    if is_err(request):
+        print(request.err_value.error_message)
+
 def get_tracklist() -> list[Track]:
     tracklist: list[Track] = []
     print(os.getcwd())
@@ -21,26 +39,10 @@ def get_tracklist() -> list[Track]:
             if is_err(audio_metadata):
                 print(audio_metadata.err_value)
                 continue
-            #tracklist.append(
-            #    Track(audio_file))
+            tracklist.append(
+                Track(audio_file))
             print(audio_file.get_metadata_as_dict().ok_value)
     return tracklist
 
-
-tracklist = get_tracklist()
-'''
-for track in tracklist:
-    print(track)
-
-request = LyricsGetter.get_lyrics(tracklist)
-if is_ok(request):
-    pairs = request.ok_value
-    for pair in pairs:
-        answer = LyricsWriter.write_to_file(pair)
-        if is_ok(answer):
-            print(answer.is_ok())
-        if is_err(answer):
-            print(answer.err_value)
-if is_err(request):
-    print(request.err_value.error_message)
-'''
+if __name__ == "__main__":
+    main()
