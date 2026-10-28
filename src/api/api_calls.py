@@ -1,5 +1,4 @@
 import requests
-import urllib.parse
 from models.track import Track
 from result import Result, Ok, Err
 
@@ -12,12 +11,13 @@ def lrc_lib_request(track: Track) -> Result[dict, AdvancedError[int]]:
     i: int = 0
     while True:
         r = requests.get(
-            BASE_URL + "/api/get?" + urllib.parse.urlencode({
+            f"{BASE_URL}/api/get?",
+            params={
                 "artist_name": track.artist_name,
                 "track_name": track.track_name,
                 "album_name": track.album_name,
                 "duration": track.duration
-            }),
+            },
             headers=HEADERS)
         if r.status_code != 503 or i == 2:
             break

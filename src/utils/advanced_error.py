@@ -7,4 +7,4 @@ T = TypeVar('T')
 class AdvancedError(Generic[T]):
     error_message: str
     error: T
-    fatal: bool
+    is_fatal: bool

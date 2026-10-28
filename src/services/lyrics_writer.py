@@ -1,6 +1,8 @@
 from pathlib import Path
 from result import Result, Ok, Err
 from models.lyric_container import LyricContainer
+from utils.advanced_error import AdvancedError
+
 
 def _write_to_file(file_path: str, lrc: str, is_overwritable: bool) -> str:
     if Path(file_path).exists() and not is_overwritable:
@@ -22,9 +24,9 @@ class LyricsWriter:
         self._is_writing_metadata = is_writing_metadata
         self._is_overwritable = is_overwritable
 
-    def write_lyrics(self, lyric_container: LyricContainer) -> Result[str, str]:
+    def write_lyrics(self, lyric_container: LyricContainer) -> Result[str, AdvancedError[int]]:
         if lyric_container.file_path is None:
-            return Err("Failed to write one file. Attribute `file_path` is [None].")
+            return Err(AdvancedError(f"Failed to write lyrics for '{lyric_container.file_path}'. Attribute `file_path` [None].", 22, False))
 
         lrc: str
         new_file_path: str = lyric_container.file_path.rsplit(".", 1)[0]
@@ -35,7 +37,7 @@ class LyricsWriter:
             new_file_path = ".".join((new_file_path, "txt"))
             lrc = lyric_container.plain_lrc
         else:
-            return Err(f"Failed to write lyrics for '{lyric_container.file_path}'. Attributes `synced_lrc` and `plain_lrc` are [None].")
+            return Err(AdvancedError(f"Failed to write lyrics for '{lyric_container.file_path}'. Attributes `synced_lrc` and `plain_lrc` are [None].", 22, False))
 
         return Ok(
             _write_to_tags(lyric_container.file_path, lrc, self._is_overwritable)
