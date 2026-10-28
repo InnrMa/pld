@@ -1,31 +1,27 @@
 from api.api_calls import lrc_lib_request
-from models.lyric_pair import LyricPair
+from models.lyric_container import LyricContainer
 from models.track import Track
 from result import Result, Ok, Err, is_ok, is_err
 
-from utils.error_pair import ErrorPair
+from utils.advanced_error import AdvancedError
 
 
 class LyricsGetter:
-    @staticmethod
-    def get_lyrics(tracklist: list[Track]) -> Result[list[LyricPair], ErrorPair[int]]:
-        lyric_pairs: list[LyricPair] = []
+    _is_verbose: bool
+    _is_ignoring_errors: bool
 
-        for track in tracklist:
-            request = lrc_lib_request(track)
+    def __init__(self, is_verbose: bool, is_ignoring_errors: bool):
+        self._is_verbose = is_verbose
+        self._is_ignoring_errors = is_ignoring_errors
 
-            if is_err(request) and not request.err_value.fatal:
-                if request.err_value.error in (400, 404, 503):
-                    continue
-                if request.err_value.error == 429:
-                    return Err(request.err_value)
-            if is_err(request):
-                return Err(request.err_value)
+    def get_lyrics(self, track: Track) -> Result[LyricContainer, AdvancedError[int]]:
+        lyric_container: LyricContainer
 
-            if is_ok(request):
-                file_path: str = track.audio_file.file_path
-                lyric_pairs.append(LyricPair(file_path, request.ok_value.get("plainLyrics"), request.ok_value.get("syncedLyrics")))
-                print(file_path)
-                print(request.ok_value.get("plainLyrics"))
+        request: Result[dict, AdvancedError[int]] = lrc_lib_request(track)
 
-        return Ok(lyric_pairs)
+        if is_err(request):
+            return Err(request.err_value)
+
+        file_path: str = track.audio_file.file_path
+        lyric_container = LyricContainer(file_path, request.ok_value.get("plainLyrics"), request.ok_value.get("syncedLyrics"))
+        return Ok(lyric_container)

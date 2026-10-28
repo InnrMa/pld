@@ -1,9 +1,9 @@
 from pathlib import Path
 from result import Result, Ok, Err
-from models.lyric_pair import LyricPair
+from models.lyric_container import LyricContainer
 
-def _write_lyrics(file_path: str, lrc: str) -> str:
-    if Path(file_path).exists():
+def _write_to_file(file_path: str, lrc: str, is_overwritable: bool) -> str:
+    if Path(file_path).exists() and not is_overwritable:
         return f"Skipping '{file_path}' - file already exists."
     else:
         file = open(file_path, "w")
@@ -11,19 +11,34 @@ def _write_lyrics(file_path: str, lrc: str) -> str:
         file.close()
         return f"'{file_path}' has been written to disk."
 
+def _write_to_tags(file_path: str, lrc: str, overwrite: bool) -> str:
+    return ""
 
 class LyricsWriter:
-    @staticmethod
-    def write_to_file(lyric_pair: LyricPair) -> Result[str, str]:
-        if lyric_pair.file_path is None:
+    _is_writing_metadata: bool
+    _is_overwritable: bool
+
+    def __init__(self, is_writing_metadata, is_overwritable):
+        self._is_writing_metadata = is_writing_metadata
+        self._is_overwritable = is_overwritable
+
+    def write_lyrics(self, lyric_container: LyricContainer) -> Result[str, str]:
+        if lyric_container.file_path is None:
             return Err("Failed to write one file. Attribute `file_path` is [None].")
 
-        new_file_path: str = lyric_pair.file_path.rsplit(".", 1)[0]
-        if lyric_pair.synced_lrc is not None:
+        lrc: str
+        new_file_path: str = lyric_container.file_path.rsplit(".", 1)[0]
+        if lyric_container.synced_lrc is not None:
             new_file_path = ".".join((new_file_path, "lrc"))
-            return Ok(_write_lyrics(new_file_path, lyric_pair.synced_lrc))
-        if lyric_pair.plain_lrc is not None:
+            lrc = lyric_container.synced_lrc
+        elif lyric_container.plain_lrc is not None:
             new_file_path = ".".join((new_file_path, "txt"))
-            return Ok(_write_lyrics(new_file_path, lyric_pair.plain_lrc))
+            lrc = lyric_container.plain_lrc
+        else:
+            return Err(f"Failed to write lyrics for '{lyric_container.file_path}'. Attributes `synced_lrc` and `plain_lrc` are [None].")
 
-        return Err(f"Failed to write lyrics for '{lyric_pair.file_path}'. Attributes `synced_lrc` and `plain_lrc` are [None].")
+        return Ok(
+            _write_to_tags(lyric_container.file_path, lrc, self._is_overwritable)
+            if self._is_writing_metadata
+            else _write_to_file(new_file_path, lrc, self._is_overwritable)
+        )

@@ -1,8 +1,6 @@
-import mutagen
 from mutagen import File, MutagenError, FileType
 from result import Result, Ok, Err
-
-from utils.error_pair import ErrorPair
+from utils.advanced_error import AdvancedError
 
 
 def _get_first(tags: dict, key):
@@ -30,19 +28,19 @@ class AudioFile:
     def __init__(self, file_path: str):
         self.file_path = file_path
 
-    def get_metadata_as_dict(self) -> Result[dict[str, str | int | None], ErrorPair[Exception | None]]:
+    def get_metadata_as_dict(self) -> Result[dict[str, str | int | None], AdvancedError[Exception | None]]:
         try:
             audio: FileType = File(self.file_path, easy=True)
             if audio is not None and audio.info is not None:
                 return Ok(_simplify_metadata(audio))
 
-            return Err(ErrorPair("'{self.file_path}' is not valid or unsupported.", None, False))
+            return Err(AdvancedError("'{self.file_path}' is not valid or unsupported.", None, False))
 
         except MutagenError as e:
-            return Err(ErrorPair(f"Corrupt audio file: {e}", e, False))
+            return Err(AdvancedError(f"Corrupt audio file: {e}", e, False))
 
         except (FileNotFoundError, PermissionError) as e:
-            return Err(ErrorPair(f"OS error: {e}", e, True))
+            return Err(AdvancedError(f"OS error: {e}", e, True))
 
     def __str__(self) -> str:
         return f"{self.file_path} - {self.get_metadata_as_dict().is_ok()}"
