@@ -12,13 +12,13 @@ class LyricsGetter:
     def __init__(self, is_ignoring_errors: bool):
         self._ignore_errors = is_ignoring_errors
 
-    def get_lyrics(self, track: Track) -> Result[LyricContainer, AdvancedError[int]]:
+    def get_lyrics(self, track: Track) -> Result[LyricContainer, AdvancedError]:
         lyric_container: LyricContainer
 
-        request: Result[dict, AdvancedError[int]] = lrc_lib_request(track)
+        request: Result[dict, AdvancedError] = lrc_lib_request(track)
 
         if is_err(request):
-            return Err(request.err_value)
+            return request
 
         file_path: str = track.audio_file.file_path
         lyric_container = LyricContainer(file_path, request.ok_value.get("plainLyrics"), request.ok_value.get("syncedLyrics"))

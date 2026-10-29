@@ -7,7 +7,7 @@ from utils.advanced_error import AdvancedError
 HEADERS = {'user-agent': 'pld v0.0.1 (innmax001@gmail.com)'}
 BASE_URL: str = "https://lrclib.net"
 
-def lrc_lib_request(track: Track) -> Result[dict, AdvancedError[int]]:
+def lrc_lib_request(track: Track) -> Result[dict, AdvancedError]:
     i: int = 0
     while True:
         r = requests.get(

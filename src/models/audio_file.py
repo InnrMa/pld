@@ -30,7 +30,7 @@ class AudioFile:
     def __init__(self, file_path: str):
         self.file_path = file_path
 
-    def get_metadata_as_dict(self) -> Result[dict[str, str | int | None], AdvancedError[int]]:
+    def get_metadata_as_dict(self) -> Result[dict[str, str | int | None], AdvancedError]:
         try:
             audio: FileType = File(self.file_path, easy=True)
             if audio is not None and audio.info is not None:

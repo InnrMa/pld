@@ -9,7 +9,7 @@ from services.lyrics_processor import LyricsProcessor
 from services.lyrics_writer import LyricsWriter
 from services.dir_searcher import DirSearcher
 from utils.advanced_error import AdvancedError
-from utils.report import Report
+from utils.advanced_list import AdvancedList
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -67,7 +67,7 @@ def main() -> int:
     processor: LyricsProcessor = LyricsProcessor(searcher, getter, writer)
 
     try:
-        report_res: Result[Report[str, AdvancedError[int]], AdvancedError[int]] = processor.process_all()
+        report_res: Result[AdvancedList[str, AdvancedError], AdvancedError] = processor.process_all()
     except KeyboardInterrupt:
         print("\n\nOperation aborted by user.", file=sys.stderr)
         return 130
@@ -81,7 +81,7 @@ def main() -> int:
     print("=" * 30)
     print(f"Total songs scanned: {report.total()}")
     print(f"Successfully downloaded lyrics: {report.no_successes()}")
-    print(f"Failures: {report.no_failures()}")
+    print(f"Failures: {report.no_failures()}\n")
 
     return 0
 

@@ -1,10 +1,7 @@
 from dataclasses import dataclass
-from typing import TypeVar, Generic
-
-T = TypeVar('T')
 
 @dataclass
-class AdvancedError(Generic[T]):
+class AdvancedError:
     error_message: str
-    error: T
+    error: int
     is_fatal: bool

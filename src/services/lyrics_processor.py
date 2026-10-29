@@ -8,7 +8,7 @@ from services.lyrics_getter import LyricsGetter
 from services.lyrics_writer import LyricsWriter
 from services.dir_searcher import DirSearcher
 from utils.advanced_error import AdvancedError
-from utils.report import Report
+from utils.advanced_list import AdvancedList
 
 
 class LyricsProcessor:
@@ -21,12 +21,12 @@ class LyricsProcessor:
         self.getter = getter
         self.writer = writer
 
-    def process_all(self) -> Result[Report[str, AdvancedError[int]], AdvancedError[int]]:
-        report: Report[str, AdvancedError[int]] = Report()
+    def process_all(self) -> Result[AdvancedList[str, AdvancedError], AdvancedError]:
+        report: AdvancedList[str, AdvancedError] = AdvancedList()
 
         tracklist: list[Track] = self.searcher.get_tracklist()
         for track in tracklist:
-            lrc_res: Result[LyricContainer, AdvancedError[int]] = self.getter.get_lyrics(track)
+            lrc_res: Result[LyricContainer, AdvancedError] = self.getter.get_lyrics(track)
             if is_err(lrc_res):
                 if lrc_res.err_value.is_fatal:
                     return Err(lrc_res.err_value)

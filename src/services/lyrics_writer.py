@@ -24,7 +24,7 @@ class LyricsWriter:
         self._is_writing_metadata = is_writing_metadata
         self._is_overwritable = is_overwritable
 
-    def write_lyrics(self, lyric_container: LyricContainer) -> Result[str, AdvancedError[int]]:
+    def write_lyrics(self, lyric_container: LyricContainer) -> Result[str, AdvancedError]:
         if lyric_container.file_path is None:
             return Err(AdvancedError(f"Failed to write lyrics for '{lyric_container.file_path}'. Attribute `file_path` [None].", 22, False))
 

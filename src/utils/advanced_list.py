@@ -3,7 +3,7 @@ from typing import TypeVar, Generic
 T = TypeVar('T')
 E = TypeVar('E')
 
-class Report(Generic[T, E]):
+class AdvancedList(Generic[T, E]):
     success: list[T]
     failure: list[E]
 
