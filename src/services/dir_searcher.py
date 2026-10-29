@@ -27,8 +27,9 @@ class DirSearcher:
                         return audio_metadata
                     tracklist.failure.append(audio_metadata.err_value)
                     continue
-                if ".".join((file_path.rsplit(".", 1)[0], "lrc")):
-                    tracklist.failure.append()
+                if Path(".".join((file_path.rsplit(".", 1)[0], "lrc"))).exists():
+                    tracklist.failure.append(AdvancedError(f"Skipped '{file_path}' - file already exists.", 22, False))
+                    continue
                 tracklist.success.append(
                     Track(audio_file))
 
